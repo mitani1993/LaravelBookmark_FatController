@@ -4,6 +4,15 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class CreateBookmarkRequest
+ * @package App\Http\Requests
+ *
+ * TIPS このようにコメントを書くと、利用しているControllerのほうで型の補完が効きます
+ * @property-read string url
+ * @property-read string comment
+ * @property-read int category
+ */
 class CreateBookmarkRequest extends FormRequest
 {
     /**
@@ -13,7 +22,7 @@ class CreateBookmarkRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +33,9 @@ class CreateBookmarkRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'url' => 'required|string|url',
+            'comment' => 'required|string|min:10|max:1000',
+            'category' => 'required|integer|exists:bookmark_categories,id',
         ];
     }
 }
