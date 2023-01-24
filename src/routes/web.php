@@ -22,7 +22,7 @@ Route::prefix('/bookmarks')->group(function () {
     Route::get('/', 'Bookmarks\BookmarkController@list');
     Route::get('/category/{category_id}', 'Bookmarks\BookmarkController@listCategory');
     Route::post('/', 'Bookmarks\BookmarkController@create')->middleware('auth'); // ->middleware('auth')を追加
-    Route::put('/{id}', 'Bookmarks\BookmarkController@update');
+    Route::put('/{id}', 'Bookmarks\BookmarkController@update')->middleware('auth');
     Route::delete('/{id}', 'Bookmarks\BookmarkController@delete');
 });
 

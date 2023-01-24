@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Bookmarks;
 
 use App\Bookmark\UseCase\CreateBookmarkUseCase;
 use App\Bookmark\UseCase\ShowBookmarkListPageUseCase;
+use App\Bookmark\UseCase\UpdateBookmarkUseCase;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateBookmarkRequest;
+use App\Http\Requests\UpdateBookmarkRequest;
 use App\Lib\LinkPreview\LinkPreview;
 use App\Models\Bookmark;
 use App\Models\BookmarkCategory;
@@ -152,38 +154,19 @@ class BookmarkController extends Controller
      * 本人以外は編集できない
      * ブックマーク後24時間経過したものは編集できない仕様
      *
-     * @param Request $request
+     * @param UpdateBookmarkRequest $request
      * @param int $id
+     * @param UpdateBookmarkUseCase $useCase
      * @return Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      * @throws ValidationException
      */
-    public function update(Request $request, int $id)
+    public function update(UpdateBookmarkRequest $request, int $id, UpdateBookmarkUseCase $useCase)
     {
-        if (Auth::guest()) {
-            // @note ここの処理はユーザープロフィールでも使われている
-            return redirect('/login');
-        }
-
-        Validator::make($request->all(), [
-            'comment' => 'required|string|min:10|max:1000',
-            'category' => 'required|integer|exists:bookmark_categories,id',
-        ])->validate();
-
-        $model = Bookmark::query()->findOrFail($id);
-
-        if ($model->can_not_delete_or_edit) {
-            throw ValidationException::withMessages([
-                'can_edit' => 'ブックマーク後24時間経過したものは編集できません'
-            ]);
-        }
-
-        if ($model->user_id !== Auth::id()) {
-            abort(403);
-        }
-
-        $model->category_id = $request->category;
-        $model->comment = $request->comment;
-        $model->save();
+        $useCase->handle(
+            $id,
+            $request->comment,
+            $request->category
+        );
 
         // 成功時は一覧ページへ
         return redirect('/bookmarks', 302);
