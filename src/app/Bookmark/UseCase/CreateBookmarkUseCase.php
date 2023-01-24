@@ -2,6 +2,7 @@
 
 namespace App\Bookmark\UseCase;
 
+use App\Lib\LinkPreview\LinkPreview;
 use App\Models\Bookmark;
 use Dusterio\LinkPreview\Client;
 use Illuminate\Support\Facades\Auth;
@@ -28,11 +29,8 @@ final class CreateBookmarkUseCase
      */
     public function handle(string $url, int $category, string $comment)
     {
-        // 下記のサービスでも同様のことが実現できる
-        // @see https://www.linkpreview.net/
-        $previewClient = new Client($url);
         try {
-            $preview = $previewClient->getPreview('general')->toArray();
+            $preview = (new LinkPreview())->get($url);
 
             $model = new Bookmark();
             $model->url = $url;
