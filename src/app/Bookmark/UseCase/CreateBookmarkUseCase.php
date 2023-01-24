@@ -37,9 +37,9 @@ final class CreateBookmarkUseCase
             $model->category_id = $category;
             $model->user_id = Auth::id();
             $model->comment = $comment;
-            $model->page_title = $preview['title'];
-            $model->page_description = $preview['description'];
-            $model->page_thumbnail_url = $preview['cover'];
+            $model->page_title = $preview->title;
+            $model->page_description = $preview->description;
+            $model->page_thumbnail_url = $preview->cover;
             $model->save();
         } catch (\Exception $e) {
             Log::error($e->getMessage());
